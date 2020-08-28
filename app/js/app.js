@@ -14,3 +14,13 @@ const $weatherForecast = document.querySelectorAll(".weather__forecast");
 // buttons
 const $addButton = document.querySelector("#add-city");
 const $closeButtons = document.querySelectorAll(".btn--close");
+
+// helper functions
+function ConvertKelvinToCelcius(kelvin) {
+  return Math.round((kelvin - 273.15) * 100) / 100;
+}
+
+function GetHourOfDay(date) {
+  let d = new Date(date);
+  return d.toLocaleTimeString();
+}
