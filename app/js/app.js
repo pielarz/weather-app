@@ -24,3 +24,21 @@ function GetHourOfDay(date) {
   let d = new Date(date);
   return d.toLocaleTimeString();
 }
+
+// Get user location from API
+class IP {
+  async Get() {
+    try {
+      const data = await fetch("http://ip-api.com/json/");
+      const json = await data.json();
+
+      const lat = json.lat;
+      const lon = json.lon;
+
+      return [lat, lon];
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+}
