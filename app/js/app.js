@@ -10,3 +10,7 @@ const $pressureValues = document.querySelectorAll(".pressure__value");
 const $humidityValues = document.querySelectorAll(".humidity__value");
 const $windspeedValues = document.querySelectorAll(".wind-speed__value");
 const $weatherForecast = document.querySelectorAll(".weather__forecast");
+
+// buttons
+const $addButton = document.querySelector("#add-city");
+const $closeButtons = document.querySelectorAll(".btn--close");
