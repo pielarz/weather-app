@@ -147,7 +147,7 @@ const main = async () => {
 
 main();
 
-// HANDLERS
+// EVENT HANDLERS
 
 // event listeners handling
 $addButton.addEventListener("click", () => {
