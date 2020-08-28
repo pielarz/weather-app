@@ -42,3 +42,37 @@ class IP {
     }
   }
 }
+// Weather API from user location
+class WEATHER {
+  APIKEY = "37a1594273db599dac37e502bc97e237";
+
+  async GetByLatLon(lat, lon) {
+    const URL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${this.APIKEY}`;
+    try {
+      const data = await fetch(URL);
+      const json = await data.json();
+      return json;
+    } catch (error) {
+      console.log(error);
+      return null;
+    } finally {
+      $body.classList.remove("loading");
+      $weatherBox.classList.remove("d-none");
+    }
+  }
+
+  async GetByCity(city) {
+    const URL = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${this.APIKEY}`;
+    try {
+      const data = await fetch(URL);
+      const json = await data.json();
+      return json;
+    } catch (error) {
+      console.log(error);
+      return null;
+    } finally {
+      $body.classList.remove("loading");
+      $weatherBox.classList.remove("d-none");
+    }
+  }
+}
