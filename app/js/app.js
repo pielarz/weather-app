@@ -56,7 +56,6 @@ class WEATHER {
       return null;
     } finally {
       $body.classList.remove("loading");
-      $weatherBox.classList.remove("d-none");
     }
   }
 
@@ -71,7 +70,6 @@ class WEATHER {
       return null;
     } finally {
       $body.classList.remove("loading");
-      $weatherBox.classList.remove("d-none");
     }
   }
 }

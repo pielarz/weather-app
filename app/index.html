@@ -13,7 +13,7 @@
       <div class="container">
         <div class="logo"><img src="images/icons/logo.svg" /> Weather App</div>
         <button class="btn" id="add-city">
-          Dodaj miasto <i class="material-icons">add_circle</i>
+          Add city <i class="material-icons">add_circle</i>
         </button>
       </div>
     </header>
@@ -23,14 +23,14 @@
         <button class="btn btn--icon btn--close">
           <i class="material-icons">close</i>
         </button>
-        <h2>Znajdź miasto</h2>
+        <h2>Find city</h2>
 
         <form novalidate autocomplete="off" class="find-city" id="find-city">
           <input
             type="text"
             name="search"
             id="search"
-            placeholder="np. Wrocław"
+            placeholder="ex. Warsaw"
           />
           <button type="submit"><i class="material-icons">search</i></button>
         </form>
@@ -49,28 +49,25 @@
 
           <div class="weather__info">
             <div class="city">
-              <span class="city__name">Wrocław</span>
-              <span class="btn btn--icon"
-                ><i class="material-icons">edit</i></span
-              >
+              <span class="city__name">Warsaw</span>
             </div>
             <div class="temperature">
-              <span class="temperature__value">16.5</span>&deg;C
+              <span class="temperature__value">0</span>&deg;C
             </div>
           </div>
 
           <ul class="weather__details">
             <li>
               <img src="images/icons/pressure.svg" />
-              <span class="pressure__value">998 hPa</span>
+              <span class="pressure__value">0 hPa</span>
             </li>
             <li>
               <img src="images/icons/humidity.svg" />
-              <span class="humidity__value">45%</span>
+              <span class="humidity__value">0%</span>
             </li>
             <li>
               <img src="images/icons/wind-speed.svg" />
-              <span class="wind-speed__value">5.5 m/s</span>
+              <span class="wind-speed__value">0 m/s</span>
             </li>
           </ul>
 
