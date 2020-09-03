@@ -1,5 +1,3 @@
-import WEATHER_API_KEY from "./api_keys";
-
 // Components selectors
 const $body = document.querySelector("body");
 const $btnClose = document.querySelector(".btn-remove-module");
@@ -32,12 +30,25 @@ function GetHourOfDay(date) {
   return d.toLocaleTimeString();
 }
 
+// Event listeners
+$btnShowForm.addEventListener("click", () => {
+  $addForm.getAttributeNames()[1] === "hidden"
+    ? $addForm.removeAttribute("hidden")
+    : $addForm.setAttribute("hidden", "hidden");
+});
+
+$btnFormClose.addEventListener("click", () => {
+  $addForm.getAttributeNames()[1] === "hidden"
+    ? $addForm.removeAttribute("hidden")
+    : $addForm.setAttribute("hidden", "hidden");
+});
+
 // Get user location (latitude, longitude)
 class Location {
-  async Get() {
+  Get() {
     try {
       let array = [];
-      const data = await navigator.geolocation.getCurrentPosition((data) => {
+      navigator.geolocation.getCurrentPosition((data) => {
         array.push(data.coords.latitude);
         array.push(data.coords.longitude);
       }, console.error("Can't get user location"));
@@ -53,6 +64,8 @@ class Location {
 
 // Get weather from user location
 class Weather {
+  WEATHER_API_KEY = "";
+
   async GetByLatLon(lat, lon) {
     const URL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}`;
     try {
@@ -82,4 +95,56 @@ class Weather {
       $weatherModule.classList.remove("hidden");
     }
   }
+}
+
+// Hold information about weather
+class CITY {
+  constructor(json) {
+    this.name = json.city.name;
+    this.todayTemp = ConvertKelvinToCelcius(json.list[0].main.temp);
+    this.todayPress = json.list[0].main.pressure;
+    this.todayHuma = json.list[0].main.humidity;
+    this.todayWind = json.list[0].wind.speed;
+    this.todayIco = json.list[0].weather[0].main;
+    this.predWeather = [];
+
+    for (let i = 1; i <= 5; i++) {
+      const tempObj = {
+        hour: GetHourOfDay(json.list[i].dt_txt),
+        icon: json.list[i].weather[0].main,
+        temperature: ConvertKelvinToCelcius(json.list[i].main.temp),
+      };
+      this.predWeather.push(tempObj);
+    }
+  }
+
+  prepareBox = () => {
+    $cityName.innerText = this.name;
+    $temperature.innerText = this.todayTemp;
+    $pressure.innerText = this.todayPress + " hPa";
+    $humidity.innerText = this.todayHuma + "%";
+    $windSpeed.innerText = this.todayWind + " m/s";
+
+    this.predWeather.forEach((prediction) => {
+      const li = document.createElement("LI");
+
+      const citySpan = document.createElement("SPAN");
+      citySpan.classList.add("day");
+      citySpan.innerText = prediction.hour;
+
+      const img = document.createElement("IMG");
+      img.src = "images/icons/clear-day.svg";
+
+      const temperatureSpan = document.createElement("SPAN");
+      const valueSpan = document.createElement("SPAN");
+      valueSpan.innerText = prediction.temperature;
+      temperatureSpan.appendChild(valueSpan);
+
+      li.appendChild(citySpan);
+      li.appendChild(img);
+      li.appendChild(temperatureSpan);
+
+      $daysContent[0].append(li);
+    });
+  };
 }
