@@ -8,24 +8,24 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
 
-  <body>
+  <body class="loading" id="body">
     <header>
       <div class="container">
         <div class="logo"><img src="images/icons/logo.svg" /> Weather App</div>
         <button class="btn" id="add-city">
-          Add city <i class="material-icons">add_circle</i>
+          Dodaj miasto <i class="material-icons">add_circle</i>
         </button>
       </div>
     </header>
 
     <section id="app" class="container">
-      <div class="module module__form" hidden>
-        <button class="btn btn--icon btn--close btn-add-module-form">
+      <div id="search-box" class="module module__form" hidden>
+        <button class="btn btn--icon btn--close">
           <i class="material-icons">close</i>
         </button>
-        <h2>Find city</h2>
+        <h2>Znajdź miasto</h2>
 
-        <form novalidate autocomplete="off" class="find-city">
+        <form novalidate autocomplete="off" class="find-city" id="find-city">
           <input
             type="text"
             name="search"
@@ -37,8 +37,8 @@
         <div class="search-error"></div>
       </div>
 
-      <div class="module module__weather" hidden>
-        <button class="btn btn--icon btn--close btn-remove-module">
+      <div class="module module__weather" id="weather-box">
+        <button class="btn btn--icon btn--close">
           <i class="material-icons">close</i>
         </button>
 
@@ -49,7 +49,10 @@
 
           <div class="weather__info">
             <div class="city">
-              <span class="city__name">Warsaw</span>
+              <span class="city__name">Wrocław</span>
+              <span class="btn btn--icon"
+                ><i class="material-icons">edit</i></span
+              >
             </div>
             <div class="temperature">
               <span class="temperature__value">16.5</span>&deg;C
