@@ -1,6 +1,6 @@
 // Components selectors
 const $body = document.querySelector("body");
-let $btnClose = document.querySelectorAll(".btn-remove-module");
+const $btnClose = document.querySelector(".btn-remove-module");
 const $btnFormClose = document.querySelector(".btn-add-module-form");
 const $btnShowForm = document.querySelector("#add-city");
 const $addForm = document.querySelector(".module__form");
@@ -54,17 +54,20 @@ $searchForm.addEventListener("submit", async (event) => {
   $searchForm.reset();
 
   $body.classList.add("loading");
-  $addForm.classList.setAttribute("hidden", "hidden");
+  $addForm.setAttribute("hidden", "hidden");
 
   const wheatherInfo = await new Weather().GetByCity(cityName);
   let newBox = new WeatherInfo(wheatherInfo);
   console.log(newBox);
 
   const newDOMBox = $weatherModule.cloneNode(true);
+
   $weatherContainer.appendChild(newDOMBox);
   newBox.prepareBox(newDOMBox);
+});
 
-  let $btnClose = document.querySelectorAll(".btn-remove-module");
+$btnClose.addEventListener("click", () => {
+  $weatherModule.remove();
 });
 
 // Get user location (latitude, longitude)
@@ -179,7 +182,7 @@ const main = async () => {
   const weatherInfo = await new Weather().GetByLatLon(lat, lon);
 
   let firstBox = new WeatherInfo(weatherInfo);
-  firstBox.prepareBox($weatherModule);
+  firstBox.prepareBox();
 };
 
 main();
