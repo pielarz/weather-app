@@ -1,77 +1,31 @@
-// Components selectors
-const $body = document.querySelector("body");
-const $btnClose = document.querySelector(".btn-remove-module");
-const $btnFormClose = document.querySelector(".btn-add-module-form");
-const $btnShowForm = document.querySelector("#add-city");
-const $addForm = document.querySelector(".module__form");
-const $cityNameInput = document.querySelector("#search");
-const $searchForm = document.querySelector(".find-city");
+const $body = document.querySelector("#body");
+const $weatherBox = document.querySelector("#weather-box");
+const $searchBox = document.querySelector("#search-box");
+const $searchForm = document.querySelector("#find-city");
 const $weatherContainer = document.querySelector("#app");
 
-// Weather main module selectors
-const $weatherModule = document.querySelector(".module__weather");
-const $cityName = document.querySelector(".city__name");
-const $temperature = document.querySelector(".temperature__value");
+const $cityNames = document.querySelectorAll(".city__name");
+const $todayTemperatures = document.querySelectorAll(".temperature__value");
+const $pressureValues = document.querySelectorAll(".pressure__value");
+const $humidityValues = document.querySelectorAll(".humidity__value");
+const $windspeedValues = document.querySelectorAll(".wind-speed__value");
+const $weatherForecast = document.querySelectorAll(".weather__forecast");
 
-// Weather details module selectors
-const $pressure = document.querySelector(".pressure__value");
-const $humidity = document.querySelector(".humidity__value");
-const $windSpeed = document.querySelector(".wind-speed__value");
-const $weatherIcon = document.querySelector(".weather__icon").firstChild;
+const $addButton = document.querySelector("#add-city");
+let $closeButtons = document.querySelectorAll(".btn--close");
 
-// Weather forecast module selectors
-const $daysContent = document.querySelectorAll(".day");
-const $weatherForecast = document.querySelector(".weather__forecast");
-
-// Helpers
 function ConvertKelvinToCelcius(kelvin) {
   return Math.round((kelvin - 273.15) * 100) / 100;
 }
 
 function GetHourOfDay(date) {
-  let d = new Date(date);
-  return d.toLocaleTimeString();
+  return new Date(date).toLocaleTimeString(navigator.language, {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
-// Event listeners
-$btnShowForm.addEventListener("click", () => {
-  $addForm.getAttributeNames()[1] === "hidden"
-    ? $addForm.removeAttribute("hidden")
-    : $addForm.setAttribute("hidden", "hidden");
-});
-
-$btnFormClose.addEventListener("click", () => {
-  $addForm.getAttributeNames()[1] === "hidden"
-    ? $addForm.removeAttribute("hidden")
-    : $addForm.setAttribute("hidden", "hidden");
-});
-
-$searchForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const formData = new FormData(event.target);
-  const cityName = formData.get("search");
-
-  $searchForm.reset();
-
-  $body.classList.add("loading");
-  $addForm.setAttribute("hidden", "hidden");
-
-  const wheatherInfo = await new Weather().GetByCity(cityName);
-  let newBox = new WeatherInfo(wheatherInfo);
-  console.log(newBox);
-
-  const newDOMBox = $weatherModule.cloneNode(true);
-
-  $weatherContainer.appendChild(newDOMBox);
-  newBox.prepareBox(newDOMBox);
-});
-
-$btnClose.addEventListener("click", () => {
-  $weatherModule.remove();
-});
-
-// Get user location (latitude, longitude)
-class Location {
+class IP {
   async Get() {
     try {
       const data = await fetch("http://ip-api.com/json/");
@@ -88,44 +42,41 @@ class Location {
   }
 }
 
-// Get weather from user location
-class Weather {
-  WEATHER_API_KEY = "37a1594273db599dac37e502bc97e237";
+class WEATHER {
+  APIKEY = "Enter your API key";
 
   async GetByLatLon(lat, lon) {
-    const URL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${this.WEATHER_API_KEY}`;
+    const URL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${this.APIKEY}`;
     try {
       const data = await fetch(URL);
       const json = await data.json();
       return json;
     } catch (error) {
-      console.error(error);
+      console.log(error);
       return null;
     } finally {
       $body.classList.remove("loading");
-      $weatherModule.removeAttribute("hidden");
+      $weatherBox.classList.remove("d-none");
     }
   }
 
   async GetByCity(city) {
-    const URL = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${this.WEATHER_API_KEY}`;
+    const URL = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${this.APIKEY}`;
     try {
       const data = await fetch(URL);
       const json = await data.json();
       return json;
     } catch (error) {
-      console.error(error);
+      console.log(error);
       return null;
     } finally {
       $body.classList.remove("loading");
-      $weatherModule.removeAttribute("hidden");
+      $weatherBox.classList.remove("d-none");
     }
   }
 }
 
-// Hold information about weather
-// TODO: CHANGE ICONS BASED ON WEATHER INFO
-class WeatherInfo {
+class CITY {
   constructor(json) {
     this.name = json.city.name;
     this.todayTemp = ConvertKelvinToCelcius(json.list[0].main.temp);
@@ -133,8 +84,8 @@ class WeatherInfo {
     this.todayHuma = json.list[0].main.humidity;
     this.todayWind = json.list[0].wind.speed;
     this.todayIco = json.list[0].weather[0].main;
-    this.predWeather = [];
 
+    this.predWeather = [];
     for (let i = 1; i <= 5; i++) {
       const tempObj = {
         hour: GetHourOfDay(json.list[i].dt_txt),
@@ -145,12 +96,17 @@ class WeatherInfo {
     }
   }
 
-  prepareBox = () => {
-    $cityName.innerText = this.name;
-    $temperature.innerText = this.todayTemp;
-    $pressure.innerText = this.todayPress + " hPa";
-    $humidity.innerText = this.todayHuma + "%";
-    $windSpeed.innerText = this.todayWind + " m/s";
+  prepareBox = (DOM) => {
+    DOM.querySelectorAll(".city__name")[0].innerText = this.name;
+    DOM.querySelectorAll(".temperature__value")[0].innerText = this.todayTemp;
+    DOM.querySelectorAll(".pressure__value")[0].innerText =
+      this.todayPress + " hPa";
+    DOM.querySelectorAll(".humidity__value")[0].innerText =
+      this.todayHuma + "%";
+    DOM.querySelectorAll(".wind-speed__value")[0].innerText =
+      this.todayWind + " m/s";
+
+    DOM.querySelectorAll(".weather__forecast")[0].innerText = "";
 
     this.predWeather.forEach((prediction) => {
       const li = document.createElement("LI");
@@ -171,18 +127,59 @@ class WeatherInfo {
       li.appendChild(img);
       li.appendChild(temperatureSpan);
 
-      $weatherForecast.appendChild(li);
+      DOM.querySelectorAll(".weather__forecast")[0].appendChild(li);
+
+      DOM.firstElementChild.addEventListener("click", () => {
+        DOM.setAttribute("hidden", "true");
+      });
     });
   };
 }
 
 const main = async () => {
-  const [lat, lon] = await new Location().Get();
+  const [lat, lon] = await new IP().Get();
 
-  const weatherInfo = await new Weather().GetByLatLon(lat, lon);
+  const wheatherInfo = await new WEATHER().GetByLatLon(lat, lon);
 
-  let firstBox = new WeatherInfo(weatherInfo);
-  firstBox.prepareBox();
+  let firstBox = new CITY(wheatherInfo);
+  firstBox.prepareBox($weatherBox);
 };
 
 main();
+
+$addButton.addEventListener("click", () => {
+  $searchBox.getAttributeNames()[2] == "hidden"
+    ? $searchBox.removeAttribute("hidden")
+    : $searchBox.setAttribute("hidden", "true");
+});
+
+$searchForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const cityName = formData.get("search");
+
+  $searchForm.reset();
+
+  $body.classList.add("loading");
+  $searchBox.setAttribute("hidden", "true");
+
+  const wheatherInfo = await new WEATHER().GetByCity(cityName);
+  let newBox = new CITY(wheatherInfo);
+  console.log(newBox);
+
+  const newDOMBox = $weatherBox.cloneNode(true);
+  newDOMBox.removeAttribute("hidden");
+  $weatherContainer.appendChild(newDOMBox);
+
+  newBox.prepareBox(newDOMBox);
+
+  $closeButtons = document.querySelectorAll(".btn--close");
+});
+
+$closeButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    button.parentNode.getAttributeNames()[2] == "hidden"
+      ? button.parentNode.removeAttribute("hidden")
+      : button.parentNode.setAttribute("hidden", "true");
+  });
+});
