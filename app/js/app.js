@@ -22,5 +22,31 @@ const $weatherIcon = document.querySelector(".weather__icon").firstChild;
 // Weather forecast module selectors
 const $daysContent = document.querySelectorAll(".day");
 
-// Get user location
-let userLocation = async () => {};
+// Helpers
+function ConvertKelvinToCelcius(kelvin) {
+  return Math.round((kelvin - 273.15) * 100) / 100;
+}
+
+function GetHourOfDay(date) {
+  let d = new Date(date);
+  return d.toLocaleTimeString();
+}
+
+// Get user location (latitude, longitude)
+class Location {
+  async Get() {
+    try {
+      let array = [];
+      const data = await navigator.geolocation.getCurrentPosition((data) => {
+        array.push(data.coords.latitude);
+        array.push(data.coords.longitude);
+      }, console.error("Can't get user location"));
+
+      return array;
+    } catch (error) {
+      console.error(error);
+      // Warsaw city coordinates
+      return [52.237049, 21.017532];
+    }
+  }
+}
