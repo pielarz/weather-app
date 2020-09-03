@@ -121,6 +121,7 @@ class Weather {
 }
 
 // Hold information about weather
+// TODO: CHANGE ICONS BASED ON WEATHER INFO
 class WeatherInfo {
   constructor(json) {
     this.name = json.city.name;
