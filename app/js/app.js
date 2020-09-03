@@ -50,3 +50,36 @@ class Location {
     }
   }
 }
+
+// Get weather from user location
+class Weather {
+  async GetByLatLon(lat, lon) {
+    const URL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}`;
+    try {
+      const data = await fetch(URL);
+      const json = await data.json();
+      return json;
+    } catch (error) {
+      console.error(error);
+      return null;
+    } finally {
+      $body.classList.remove("loading");
+      $weatherModule.classList.remove("hidden");
+    }
+  }
+
+  async GetByCity(city) {
+    const URL = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${WEATHER_API_KEY}`;
+    try {
+      const data = await fetch(URL);
+      const json = await data.json();
+      return json;
+    } catch (error) {
+      console.error(error);
+      return null;
+    } finally {
+      $body.classList.remove("loading");
+      $weatherModule.classList.remove("hidden");
+    }
+  }
+}
