@@ -1,10 +1,12 @@
 // Components selectors
 const $body = document.querySelector("body");
-const $btnClose = document.querySelector(".btn-remove-module");
+let $btnClose = document.querySelectorAll(".btn-remove-module");
 const $btnFormClose = document.querySelector(".btn-add-module-form");
 const $btnShowForm = document.querySelector("#add-city");
 const $addForm = document.querySelector(".module__form");
 const $cityNameInput = document.querySelector("#search");
+const $searchForm = document.querySelector(".find-city");
+const $weatherContainer = document.querySelector("#app");
 
 // Weather main module selectors
 const $weatherModule = document.querySelector(".module__weather");
@@ -19,6 +21,7 @@ const $weatherIcon = document.querySelector(".weather__icon").firstChild;
 
 // Weather forecast module selectors
 const $daysContent = document.querySelectorAll(".day");
+const $weatherForecast = document.querySelector(".weather__forecast");
 
 // Helpers
 function ConvertKelvinToCelcius(kelvin) {
@@ -43,31 +46,51 @@ $btnFormClose.addEventListener("click", () => {
     : $addForm.setAttribute("hidden", "hidden");
 });
 
+$searchForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const cityName = formData.get("search");
+
+  $searchForm.reset();
+
+  $body.classList.add("loading");
+  $addForm.classList.setAttribute("hidden", "hidden");
+
+  const wheatherInfo = await new Weather().GetByCity(cityName);
+  let newBox = new WeatherInfo(wheatherInfo);
+  console.log(newBox);
+
+  const newDOMBox = $weatherModule.cloneNode(true);
+  $weatherContainer.appendChild(newDOMBox);
+  newBox.prepareBox(newDOMBox);
+
+  let $btnClose = document.querySelectorAll(".btn-remove-module");
+});
+
 // Get user location (latitude, longitude)
 class Location {
-  Get() {
+  async Get() {
     try {
-      let array = [];
-      navigator.geolocation.getCurrentPosition((data) => {
-        array.push(data.coords.latitude);
-        array.push(data.coords.longitude);
-      }, console.error("Can't get user location"));
+      const data = await fetch("http://ip-api.com/json/");
+      const json = await data.json();
 
-      return array;
+      const lat = json.lat;
+      const lon = json.lon;
+
+      return [lat, lon];
     } catch (error) {
-      console.error(error);
-      // Warsaw city coordinates
-      return [52.237049, 21.017532];
+      console.log(error);
+      return null;
     }
   }
 }
 
 // Get weather from user location
 class Weather {
-  WEATHER_API_KEY = "";
+  WEATHER_API_KEY = "37a1594273db599dac37e502bc97e237";
 
   async GetByLatLon(lat, lon) {
-    const URL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}`;
+    const URL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${this.WEATHER_API_KEY}`;
     try {
       const data = await fetch(URL);
       const json = await data.json();
@@ -77,12 +100,12 @@ class Weather {
       return null;
     } finally {
       $body.classList.remove("loading");
-      $weatherModule.classList.remove("hidden");
+      $weatherModule.removeAttribute("hidden");
     }
   }
 
   async GetByCity(city) {
-    const URL = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${WEATHER_API_KEY}`;
+    const URL = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${this.WEATHER_API_KEY}`;
     try {
       const data = await fetch(URL);
       const json = await data.json();
@@ -92,13 +115,13 @@ class Weather {
       return null;
     } finally {
       $body.classList.remove("loading");
-      $weatherModule.classList.remove("hidden");
+      $weatherModule.removeAttribute("hidden");
     }
   }
 }
 
 // Hold information about weather
-class CITY {
+class WeatherInfo {
   constructor(json) {
     this.name = json.city.name;
     this.todayTemp = ConvertKelvinToCelcius(json.list[0].main.temp);
@@ -137,14 +160,25 @@ class CITY {
 
       const temperatureSpan = document.createElement("SPAN");
       const valueSpan = document.createElement("SPAN");
-      valueSpan.innerText = prediction.temperature;
+      valueSpan.innerText = `${prediction.temperature}\u{000B0}C`;
       temperatureSpan.appendChild(valueSpan);
 
       li.appendChild(citySpan);
       li.appendChild(img);
       li.appendChild(temperatureSpan);
 
-      $daysContent[0].append(li);
+      $weatherForecast.appendChild(li);
     });
   };
 }
+
+const main = async () => {
+  const [lat, lon] = await new Location().Get();
+
+  const weatherInfo = await new Weather().GetByLatLon(lat, lon);
+
+  let firstBox = new WeatherInfo(weatherInfo);
+  firstBox.prepareBox($weatherModule);
+};
+
+main();
